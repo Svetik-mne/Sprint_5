@@ -3,6 +3,9 @@ from selenium import webdriver
 from selenium.webdriver.chrome.service import Service as ChromeService
 from webdriver_manager.chrome import ChromeDriverManager
 from generation_ep import EmailPasswordGenerator
+from data import USER_EMAIL, USER_PASSWORD
+from urls import LOGIN_URL
+from locators import Locators
 
 @pytest.fixture
 def driver():
@@ -17,21 +20,10 @@ def new_user():
     email, password = gen.generate()
     return email, password
 
-
 @pytest.fixture
 def login_existing_user(driver):
-    from locators import Locators
-    from data import BASE_URL
-    driver.get(BASE_URL + "/login")
-    driver.find_element(*Locators.field_email).send_keys("your_email@example.com")
-    driver.find_element(*Locators.field_password).send_keys("your_password")
+    driver.get(LOGIN_URL)
+    driver.find_element(*Locators.field_email).send_keys(USER_EMAIL)
+    driver.find_element(*Locators.field_password).send_keys(USER_PASSWORD)
     driver.find_element(*Locators.button_login).click()
     yield driver
-
-
-@pytest.fixture
-def browser():
-    driver = webdriver.Chrome()  # или другой драйвер
-    driver.maximize_window()
-    yield driver
-    driver.quit()
